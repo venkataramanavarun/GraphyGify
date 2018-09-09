@@ -57,6 +57,9 @@ public class GraphyAdapter extends RecyclerView.Adapter<GraphyAdapter.MyViewHold
             pagination.pagination();
         }
 
+
+        
+
        // final Uri uri = Uri.parse(dtoArrayList.get(position).url);
 
 
