@@ -7,40 +7,37 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.facebook.drawee.backends.pipeline.Fresco;
 
 import java.util.ArrayList;
 
-/**
- * Created by A VARUN on 30-08-2018.
- */
 
 public class GraphyAdapter extends RecyclerView.Adapter<GraphyAdapter.MyViewHolder> {
 
     private Context mContext;
-    ArrayList<DTO> dtoArrayList;
-    public static final String KEY_TITLE = "title";
+    private ArrayList<DTO> dtoArrayList;
+
+
+    public void setDtoArrayList(ArrayList<DTO> dtoArrayList) {
+        this.dtoArrayList = dtoArrayList;
+    }
+
 
     Pagination pagination;
     private String url;
     private String selectSub;
 
-    public GraphyAdapter(ArrayList<DTO> dtoArrayList, Context mContext, Object mainActivityClass) {
+    public GraphyAdapter(ArrayList<DTO> dtoArrayList, Context mContext) {
         this.mContext = mContext;
         this.dtoArrayList = dtoArrayList;
-        this.pagination=(Pagination)mainActivityClass;
-
     }
 
-    
     @Override
     public GraphyAdapter.MyViewHolder onCreateViewHolder( ViewGroup parent, int viewType) {
         Fresco.initialize(mContext);
         View view = LayoutInflater.from(mContext).inflate(R.layout.recycler_item, parent, false);
-
         return new MyViewHolder(view);
     }
 
@@ -52,19 +49,6 @@ public class GraphyAdapter extends RecyclerView.Adapter<GraphyAdapter.MyViewHold
     @Override
     public void onBindViewHolder( GraphyAdapter.MyViewHolder holder, final int position) {
 
-
-        if(dtoArrayList.size()-1==position){
-            pagination.pagination();
-        }
-
-
-        
-
-       // final Uri uri = Uri.parse(dtoArrayList.get(position).url);
-
-
-        //holder.draweeView.setImageURI(uri);
-
         Glide.with(mContext).load(dtoArrayList.get(position).url).into(holder.gif_img);
         //holder.title_disc.setText(dtoArrayList.get(position).username);
 
@@ -75,12 +59,8 @@ public class GraphyAdapter extends RecyclerView.Adapter<GraphyAdapter.MyViewHold
                 Intent intent = new Intent(mContext, LoadBigImageActivity.class);
                 intent.putExtra("url", dtoArrayList.get(position).url);
                 mContext.startActivity(intent);
-
-
             }
         });
-
-
     }
 
     @Override
@@ -95,17 +75,12 @@ public class GraphyAdapter extends RecyclerView.Adapter<GraphyAdapter.MyViewHold
     public class MyViewHolder extends RecyclerView.ViewHolder {
 
         ImageView gif_img;
-        TextView title_disc;
 
         public MyViewHolder(final View itemView) {
 
             super(itemView);
-            //title_disc = itemView.findViewById(R.id.title_disc);
             gif_img = itemView.findViewById(R.id.gif_img);
-
 
         }
     }
-
-
 }

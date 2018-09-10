@@ -20,7 +20,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements Pagination {
+public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     SearchView searchView;
 
@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity implements Pagination {
 
         mContext = this;
         getSupportActionBar().hide();
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        searchView = (SearchView) findViewById(R.id.searchView);
+        recyclerView = findViewById(R.id.recyclerView);
+        searchView = findViewById(R.id.searchView);
 
 
         getSupportActionBar().setTitle("Graphy");
@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements Pagination {
                 Log.e(">>>>>>>", result);
 
                 if (result.isEmpty()) {
-                    //Utils.toast(mContext.getResources().getString(R.string.no_response_frm_srvr), mContext);
                 } else {
                     try {
                         JSONObject resultObject = new JSONObject(result);
@@ -110,16 +109,14 @@ public class MainActivity extends AppCompatActivity implements Pagination {
                                 dtoArrayList.add(dto);
 
                             }
-
                             if (dtoArrayList != null && dtoArrayList.size() > 0) {
-
                                 if (offset == 1) {
                                     dtoArrayList_main = dtoArrayList;
                                     setAdapter();
                                 } else {
                                     for (int i = 0; i < jsonArray.length(); i++)
                                         dtoArrayList_main.add(dtoArrayList.get(i));
-                                    graphyAdapter.dtoArrayList = dtoArrayList_main;
+                                    graphyAdapter.setDtoArrayList(dtoArrayList_main);
                                     graphyAdapter.notifyDataSetChanged();
                                 }
                             }
@@ -138,10 +135,30 @@ public class MainActivity extends AppCompatActivity implements Pagination {
     }
 
     private void setAdapter() {
-        graphyAdapter = new GraphyAdapter(dtoArrayList_main, mContext, MainActivity.this);
-        StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
+        graphyAdapter = new GraphyAdapter(dtoArrayList_main, mContext);
+        final StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL);
         recyclerView.setLayoutManager(staggeredGridLayoutManager); // set LayoutManager to RecyclerView
         recyclerView.setAdapter(graphyAdapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                int visibleItemCount = staggeredGridLayoutManager.getChildCount();
+                int totalItemCount = staggeredGridLayoutManager.getItemCount();
+                int[] firstVisibleItemPositions = staggeredGridLayoutManager.findFirstVisibleItemPositions(null);
+                if ((firstVisibleItemPositions[0] + visibleItemCount) >= totalItemCount && firstVisibleItemPositions[0] >= 0 && totalItemCount >= 20) {
+                    offset++;
+                    getData();
+                }
+
+            }
+        });
 
     }
 
@@ -156,12 +173,5 @@ public class MainActivity extends AppCompatActivity implements Pagination {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void pagination() {
-        offset++;
-        getData();
-
     }
 }
